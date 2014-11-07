@@ -22,4 +22,10 @@ c = A'*ones(m,1) + s;
 fprintf('Generated a random feasible LP with %i constraints and %i variables\n',m,n);
 clear x s
 
-[x,y,s,info] = mehrotra_lp_solver(A,b,c);
+opts = struct; %Empty opts
+opts.verbose = true;
+opts.max_iter        = 100 ;
+opts.ini_mehrotra    = true;
+opts.secord          = true;
+opts.verbose         = true;
+[x,y,s,info] = mehrotra_lp_solver(A,b,c,opts);
