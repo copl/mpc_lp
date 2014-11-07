@@ -26,12 +26,7 @@ function [x,y,s,info] = mehrotra_lp_solver(A,b,c,opts)
         opts = struct;
     end
     opts = get_default_options(opts);
-    
-    if(~opts.use_centrality)
-        bk_iter_predictor = 0;
-        bk_iter_corrector = 0;
-    end 
-    if(opts.verbose) fprintf('\t Centrality %s, \n \t Initialization Mehrotra %g \n',opts.centrality_type,opts.ini_mehrotra); end 
+
     if(opts.ini_mehrotra)
         %Initialization strategy from CVXOPT
         K2  = [[speye(n), A'];[A,sparse(m,m)]];
@@ -174,8 +169,8 @@ function [x,y,s,info] = mehrotra_lp_solver(A,b,c,opts)
         
         gap   = (mu*(nu+1)-tau*kappa)/tau;
         if(opts.verbose)      
-            fprintf('%2i a %3.3e s %3.3e pr %3.3e dr %3.3e gr %3.3e mu %3.3e gap %3.3e k/t %3.3e res_cent %3.3e bk pre %2i bk cor %2i\n',...
-                iter,a,sigma,nrp/(nrp0*tau),nrd/(nrd0*tau),nrg,mu,gap,kappa/tau,residual_norm_c,bk_iter_predictor,bk_iter_corrector);
+            fprintf('%2i a %3.3e s %3.3e pr %3.3e dr %3.3e gr %3.3e mu %3.3e gap %3.3e k/t %3.3e res_cent %3.3e \n',...
+                iter,a,sigma,nrp/(nrp0*tau),nrd/(nrd0*tau),nrg,mu,gap,kappa/tau,residual_norm_c);
         end
         if(nrp/nrp0 < 1.e-8 && nrd/nrd0 < 1.e-8 && mu/mu0 < 1.e-8)
             break;
