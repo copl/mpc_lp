@@ -37,25 +37,27 @@ function [x,y,s,info] = mehrotra_lp_solver(A,b,c,opts)
         sol = K2\[c;zeros(m,1)];
         y   = sol(n+1:n+m);
         s   = sol(1:n);
+   
+        if(min(x)<0) %if x is not feasible shift it into feasibility
+             a = min(x);
+             x = (1-a)*ones(n,1)+x;
+         end
+         
+         if(min(s)<0) %if s is not feasible shift it into feasibility
+             a = min(s);
+             s = (1-a)*ones(n,1)+s;
+         end
+    
+        clear sol
     else
         x = ones(n,1);
         s = ones(n,1);
         y = zeros(m,1);
     end
-    tau   = 1;
-    kappa =1;
-    clear sol
 
-    if(min(x)<0) %if x is not feasible shift it into feasibility
-        a = min(x);
-        x = (1-a)*ones(n,1)+x;
-    end
-    
-    if(min(s)<0) %if s is not feasible shift it into feasibility
-        a = min(s);
-        s = (1-a)*ones(n,1)+s;
-    end
-    
+    tau   = 1;
+    kappa = 1;
+ 
     %------Calculate the initial mu
     mu = (s'*x+tau*kappa)/(nu+1);
     mu0 = mu;
@@ -78,14 +80,14 @@ function [x,y,s,info] = mehrotra_lp_solver(A,b,c,opts)
     
     gap  = c'*x-b'*y;
     if(opts.verbose)
-        fprintf('%2i a       %3.3e pr %3.3e dr %3.3e gr %3.3e mu %3.3e gap %3.3e k/t %3.3e res_cent %3.3e\n',0,nan,nrp/(nrp0*tau),nrd/(nrd0*tau),nrg,mu,gap,kappa/tau,nan);
+        fprintf('%2i a       %3.3e pr %3.3e dr %3.3e gr %3.3e mu %3.3e gap %3.3e k/t %3.3e res_cent %3.3e\n',...
+                                                   0,nan,nrp/(nrp0*tau),nrd/(nrd0*tau),nrg,mu,gap,kappa/tau,nan);
     end 
     
     %In case we use centrality backtrack constant 
     bk_constant = 0.8;
     max_bk_iter     = 100;
-
-    
+ 
     %--------------------------------------
     %Main SOCP solver iteration
     for iter=1:opts.max_iter
